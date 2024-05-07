@@ -1,15 +1,16 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 class PurchaseOrder(models.Model):
     STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
+        ('pending', 'pending'),
+        ('completed', 'completed'),
+        ('cancelled', 'cancelled'),
     ]
 
-    po_number = models.CharField(max_length=100, unique=True)
-    vendor = models.ForeignKey("vendor.Vendor", on_delete=models.CASCADE)
+    po_number = models.CharField(primary_key = True, default = uuid.uuid4(),editable = False)
+    vendor = models.ForeignKey("vendor.Vendor", on_delete=models.CASCADE , blank=True , null = True)
     order_date = models.DateTimeField()
     delivery_date = models.DateTimeField(null=True, blank=True)
     items = models.JSONField()

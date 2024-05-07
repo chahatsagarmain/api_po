@@ -4,10 +4,12 @@ from .serializers import VendorSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser , FormParser , JSONParser
 
 class VendorView(APIView):
     permission_classes = [IsAuthenticated,]
-    
+    parser_classes = [JSONParser, FormParser]
+
     def get(self, request , format=None):
         query_set = Vendor.objects.all()
         serialized_data = VendorSerializer(query_set , many = True)
@@ -17,7 +19,7 @@ class VendorView(APIView):
         try:
             serialized_vendor = VendorSerializer(data=request.data)
             serialized_vendor.is_valid(raise_exception=True)
-            serialized_vendor.save()  # Use save() instead of create()
+            serialized_vendor.save()  
             
             return Response(data={"message": "Vendor created", "data": serialized_vendor.data}, status=status.HTTP_200_OK)
         
@@ -26,7 +28,8 @@ class VendorView(APIView):
 
 class VendorViewById(APIView):
     permission_classes = [IsAuthenticated,]
-    
+    parser_classes = [JSONParser, FormParser]
+
     def get(self, request, pk, format=None):        
         try:
             vendor = Vendor.objects.get(id=pk)
@@ -48,7 +51,7 @@ class VendorViewById(APIView):
         except Exception as e:
             return Response(data={"message" : "validation error" , "error" : str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-    def delete(self,request,pk=None):
+    def delete(self,request,pk=None,format=None):
         
         try:
             vendor = Vendor.objects.get(id = pk)
