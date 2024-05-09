@@ -119,10 +119,8 @@ class PurchaseViewsById(APIView):
                 print(delivery_date)
                 if delivery_date <= po.delivery_date:
                     #on time dilivery 
-                    print(1)
                     vendor.on_time_delivery_rate = ((vendor.on_time_delivery_rate * vendor.num_orders) + 1) / (vendor.num_orders + 1)
                     vendor.fulfillment_rate = ((vendor.fulfillment_rate*vendor.num_orders) + 1) / (vendor.num_orders + 1)
-                    print(1)
 
                 else:
                     vendor.on_time_delivery_rate = (vendor.on_time_delivery_rate * vendor.num_orders) / (vendor.num_orders + 1)
@@ -139,9 +137,9 @@ class PurchaseViewsById(APIView):
                 if not vendor and po.vendor is not None:
                     vendor = Vendor.objects.get(pk=po.vendor)
                 
-                vendor.fulfillment_rate = ((vendor.fulfillment_rate * vendor.num_orders) + 1) / (vendor.num_orders + 1)
+                vendor.fulfillment_rate = ((vendor.fulfillment_rate * vendor.num_orders)) / (vendor.num_orders + 1)
                 
-            else:
+            if "issues" not in data or not data["issues"]:
                 if not po.vendor:
                     return Response({"message" : "full fillment cant be assigned to purchase with no vendors"},status=status.HTTP_400_BAD_REQUEST)
                 # case when vendor was assigned earlier but quality rating wasnt given
@@ -149,7 +147,7 @@ class PurchaseViewsById(APIView):
                 if not vendor and po.vendor is not None:
                     vendor = Vendor.objects.get(pk=po.vendor)
                 
-                vendor.fulfillment_rate = (vendor.fulfillment_rate * vendor.num_orders) / (vendor.num_orders + 1)
+                vendor.fulfillment_rate = ((vendor.fulfillment_rate * vendor.num_orders) + 1) / (vendor.num_orders + 1)
 
             po.save()
             if vendor : vendor.num_orders += 1
