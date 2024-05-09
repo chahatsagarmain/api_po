@@ -89,6 +89,7 @@ class PurchaseViewsById(APIView):
                 
                 vendor = Vendor.objects.get(pk=data['vendor'])
                 po.vendor = po.vendor or vendor
+                po.issue_date = datetime.now(tz=tz_info)
                 #new average_response
                 response_time = datetime.now(tz=tz_info) - po.order_date
                 num_orders = vendor.num_orders
